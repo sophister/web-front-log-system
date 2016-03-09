@@ -117,8 +117,9 @@
             },
             send : function(){
                 if( ! perfSent ){
-                    if( window.performance && window.performance.timing ){
-                        extend( perfData, window.performance.timing );
+                    if( window.performance && window.performance.timing 
+                    && typeof window.performance.timing.toJSON === 'function' ){
+                        extend( perfData, window.performance.timing.toJSON() );
                     }
                     send( { perf : perfData } );    
                 }
@@ -138,7 +139,7 @@
     }
     
     if( document.readyState !== 'complete' ){
-        document.addEventListener('load', function(){
+        window.addEventListener('load', function(){
             singleton.perf.fullLoad();
             singleton.perf.send();
         } );

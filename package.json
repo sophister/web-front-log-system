@@ -1,0 +1,28 @@
+{
+  "name": "web-front-log-system",
+  "version": "1.0.0",
+  "description": "网站web前端日志收集、分析系统",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sophister/web-front-log-system.git"
+  },
+  "keywords": [
+    "webfront",
+    "log",
+    "system"
+  ],
+  "author": "Jess",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sophister/web-front-log-system/issues"
+  },
+  "homepage": "https://github.com/sophister/web-front-log-system#readme",
+  "dependencies": {
+    "lodash": "^4.6.1",
+    "pg": "^4.5.1"
+  }
+}
