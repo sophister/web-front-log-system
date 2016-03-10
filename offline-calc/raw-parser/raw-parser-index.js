@@ -40,6 +40,11 @@ try{
 }
 
 let totalCount = 0;
+let readStart = Date.now();
+
+collectManager.init({
+    logDate : logDate
+});
 
 let rl = readline.createInterface({
     input : fs.createReadStream( logFilePath )
@@ -47,11 +52,39 @@ let rl = readline.createInterface({
 
 rl.on('line', function(line){
     totalCount++;
-    console.log( line );
+    let lineObj = parseLine( line );
+    if( ! filterManager.isValid( lineObj) ){
+        return;
+    }
+    
+    let isSaved = collectManager.collect( lineObj );
+    if( ! isSaved ){
+        //该日志未找到匹配的collector，打日志
+        logManager.warn(`未找到匹配的日志收集库：${line}`);
+    }
+    
 } );
 
 rl.on('close', function(){
+    
+    let readEnd = Date.now();
+    let readDuration = ( readEnd - readStart ) / 1000;
+    
     //读取日志结束
-    logManager.log(`读取日志完成，总共读取 ${totalCount} 行日志`);
-    process.exit(0);
+    logManager.log(`读取日志完成，总共读取 ${totalCount} 行日志，耗时：${readDuration}秒`);
+    
+    //保存到数据库
+    collectManager.save()
+        .then(function(){
+            let saveEnd = Date.now();
+            let saveDuration = ( saveEnd - readEnd ) / 1000;
+            logManager.log(`保存原始日志到数据库成功!，耗时：${saveDuration} 秒`);
+            logManager.end();
+            process.exit(0);
+        })
+        .catch(function(err){
+            logManager.end();
+            process.exit(1);
+        });
+    
 } );

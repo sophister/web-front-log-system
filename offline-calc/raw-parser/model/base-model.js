@@ -66,6 +66,10 @@ _.extend( BaseModel.prototype, {
                 resolve( result );
             } );
         });
+    },
+    
+    end : function(){
+        this._dbClient.end();
     }
     
 } );
