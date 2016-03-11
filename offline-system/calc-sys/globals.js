@@ -11,6 +11,8 @@ const PLATFORM_TYPE = require('../conf/platform-const.js');
 const DB_CONFIG = require('../conf/db-conf.js');
 let logManager = require('./log-manager.js');
 
+const taskGenerator = require('./task-generator.js');
+
 
 let singleton = {
     PLATFORM_TYPE : PLATFORM_TYPE,
@@ -34,6 +36,11 @@ Object.defineProperty(global, 'LOG_TYPE', {
 
 Object.defineProperty(global, 'logManager', {
     value : logManager,
+    writable : false
+});
+
+Object.defineProperty(global, 'taskGenerator', {
+    value : taskGenerator,
     writable : false
 });
 
