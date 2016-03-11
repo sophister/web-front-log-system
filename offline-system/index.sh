@@ -24,7 +24,7 @@ log_file_unzip="we_s1_access-${log_file_date}.log"
 base_dir=$(cd "$(dirname "$0")";pwd)
 #从线上拷贝日志文件后,存放在本地的目录
 gz_log_dir='raw-logs-gz'
-gz_log_dir_path="${base_dir}/${raw_log_dir}"
+gz_log_dir_path="${base_dir}/${gz_log_dir}"
 #解压之后,日志文件存在路径
 unzip_log_dir="${base_dir}/raw-logs-unzip"
 
@@ -43,8 +43,15 @@ cd ${base_dir}
 #检查原始日志文件目录是否存在,不存在则创建
 if [ ! -d ${gz_log_dir} ]
 then
-    mkdir ${gz_log_dir_path}
+    mkdir ${gz_log_dir}
 fi
+
+if [ ! -d ${unzip_log_dir} ]
+then
+    mkdir ${unzip_log_dir}
+fi
+
+
 
 
 #下载日志文件
@@ -82,7 +89,7 @@ fi
 cd ${calc_sys_dir}
 log_date=${log_date} task_id=mo/perf/mo-perf-task.js node task-loader.js
 
-if [ $? -e 0 ]
+if [ $? -eq 0 ]
 then
     echo "执行日志 下载/入库/分析计算 完成"
     exit 0

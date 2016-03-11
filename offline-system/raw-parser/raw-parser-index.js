@@ -79,7 +79,7 @@ rl.on('close', function(){
             let saveEnd = Date.now();
             let saveDuration = ( saveEnd - readEnd ) / 1000;
             logManager.log(`保存原始日志到数据库成功!，耗时：${saveDuration} 秒`);
-            logManager.end();
+            collectManager.end();
             process.exit(0);
         })
         .catch(function(err){

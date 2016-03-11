@@ -52,7 +52,7 @@ function getModel( data ){
         logDate : data.logDate,
         table : ( data.type + '_raw')
     });
-};
+}
 
 
 let singleton = {
