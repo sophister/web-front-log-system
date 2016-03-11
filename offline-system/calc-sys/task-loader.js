@@ -110,17 +110,41 @@ try{
         } );
 
         query.on('end', function(){
-            
+
 
             let calcResult = taskConfig.getResult();
 
-            console.log( calcResult );
+            //console.log( calcResult );
 
-            taskEnd();
+            //保存结果到DB
+            const resultTable = `${type}${DB_CONFIG[platform].RESULT_TABLE_SUFFIX}`;
 
-            done();
+            //先检查该 page_id 所对应的 log_date 的数据是否已经存在
+            const deleteOldSQL = `DELETE from ${resultTable}
+                                    WHERE page_id='${pageID}' AND log_date=${LOG_DATE}`;
 
-            process.exit(0);
+            client.query( deleteOldSQL, function(err, result){
+                if( err ){
+                    return errorHandle(err);
+                }
+
+                //现在可以插入新的计算数据了
+                const saveSQL = `INSERT INTO ${resultTable} (page_id, log_date, log_data) VALUES ($1, $2, $3)`;
+                client.query( saveSQL, [ pageID, LOG_DATE, JSON.stringify(calcResult) ], function(err, result){
+                    if( err ){
+                        return errorHandle(err);
+                    }
+                    console.log( result );
+
+                    taskEnd();
+
+                    done();
+
+                    process.exit(0);
+                } );
+
+            } );
+
 
         } );
 
