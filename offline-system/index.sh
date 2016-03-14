@@ -37,6 +37,11 @@ calc_sys_dir="${base_dir}/calc-sys"
 calc_sys_index=""
 
 
+#自定义进度输出函数,加上时间
+function process_log(){
+    time=`date`
+    echo "${time} ${1}"
+}
 
 cd ${base_dir}
 
@@ -52,24 +57,42 @@ then
 fi
 
 
-
-
-#下载日志文件
-cd ${gz_log_dir_path}
-wget "http://analysis.we.com/nginx/${log_file_gz}"
-
-if [ $? -ne 0 ]
+#如果对应日期的日志压缩文件不存在,则从线上下载
+if [ ! -f "${gz_log_dir_path}/${log_file_gz}" ]
 then
-    echo "从线上下载日志文件出错: http://analysis.we.com/nginx/${log_file_gz}"
-    exit 1
+    process_log "原始日志的压缩文件不存在,开始从线上下载原始日志的压缩文件:"
+    #下载日志文件
+    cd ${gz_log_dir_path}
+    wget "http://analysis.we.com/nginx/${log_file_gz}"
+
+    if [ $? -ne 0 ]
+    then
+        process_log "从线上下载日志文件出错: http://analysis.we.com/nginx/${log_file_gz}"
+        exit 1
+    fi
+
 fi
+
+cd ${gz_log_dir_path}
 
 gunzip -c ${log_file_gz} > ${log_file_unzip}
 
 if [ $? -ne 0 ]
 then
-    echo "解压日志文件${log_file_gz}出错"
+    process_log "解压日志文件${log_file_gz}出错"
     exit 1
+fi
+
+#如果解压之后的目录已经存在同名文件,先删除
+if [ -f "${unzip_log_dir}/${log_file_unzip}" ]
+then
+    process_log "${unzip_log_dir}/${log_file_unzip} 已经存在,先删除旧的文件"
+    rm "${unzip_log_dir}/${log_file_unzip}"
+    if [ $? -ne 0 ]
+    then
+        process_log "删除旧的 ${unzip_log_dir}/${log_file_unzip} 出错,退出!!"
+        exit 1
+    fi
 fi
 
 #把解压之后的日志文件,拷贝到解压后的目录
@@ -81,7 +104,7 @@ log_file_path=${unzip_log_dir}/${log_file_unzip} log_date=${log_date} node raw-p
 
 if [ $? -ne 0 ]
 then
-    echo "执行原始日志解析出错,中止!!! log_file_path=${unzip_log_dir}/${log_file_unzip} log_date=${log_date} node raw-parser-index.js"
+    process_log "执行原始日志解析出错,中止!!! log_file_path=${unzip_log_dir}/${log_file_unzip} log_date=${log_date} node raw-parser-index.js"
     exit 1
 fi
 
@@ -91,8 +114,8 @@ log_date=${log_date} task_id=mo/perf/mo-perf-task.js node task-loader.js
 
 if [ $? -eq 0 ]
 then
-    echo "执行日志 下载/入库/分析计算 完成"
+    process_log "执行日志 下载/入库/分析计算 完成"
     exit 0
 else
-    echo "执行日志  分析计算  出错!!"
+    process_log "执行日志  分析计算  出错!!"
 fi
