@@ -9,7 +9,7 @@
 const LOG_TYPE = require('../conf/type-const.js');
 const PLATFORM_TYPE = require('../conf/platform-const.js');
 const DB_CONFIG = require('../conf/db-conf.js');
-let logManager = require('./log-manager.js');
+let logManager = require('../common/log-manager.js');
 
 const taskGenerator = require('./task-generator.js');
 

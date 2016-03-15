@@ -7,7 +7,7 @@
 let fs = require('fs');
 let path = require('path');
 let modelFactory = require('./model/model-factory.js');
-let logManager = require('./log-manager.js');
+let logManager = require('../common/log-manager.js');
 
 
 const COLLECTOR_DIR = './collectors';
