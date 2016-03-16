@@ -120,13 +120,28 @@ then
 fi
 
 #原始日志入库之后,切换到 日志解析目录,执行解析任务
-cd ${calc_sys_dir}
-log_date=${log_date} task_id=mo/perf/mo-perf-task.js node task-loader.js
+process_log "开始扫描task表, 筛选要执行的task队列"
+cd ${base_dir}
+platform=mo log_date=${log_date} node daily-task-scan.js
 
 if [ $? -eq 0 ]
 then
-    process_log "执行日志 下载/入库/分析计算 完成"
-    exit 0
+    process_log "扫描需要执行的任务队列完成 "
 else
-    process_log "执行日志  分析计算  出错!!"
+    process_log "执行  任务队列筛选  出错!!"
+    exit 1
 fi
+
+# 要执行的任务队列准备完成, 启动任务队列执行入口
+process_log "开始执行 task_execute 中 status=0 的任务:"
+cd ${base_dir}
+platform=mo task_status=0 node task-consumer.js
+
+if [ $? -eq 0 ]
+then
+    process_log " 执行  task_execute 中的任务队列 成功 :) "
+else
+    process_log "执行  task_execute 中的任务队列  出错!!"
+    exit 1
+fi
+

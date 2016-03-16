@@ -27,6 +27,12 @@
 
 数据库使用 `PostgreSQL 9.5`
 
+数据库设计, 根据不同的 `platform` 划分 `database`, 即 *移动端* 的原始日志/任务定义/任务结果都保存在 数据库 `mo` 下;
+ *PC* 端的原始日志/任务定义/任务结果 都保存在数据库 `pc` 下.
+ 
+以下的表结构, 都是以 *移动端* 
+ 
+
 ### Task 表
 
 执行里每一个统计任务,都对应 `Task` 表的一条记录(`Record`),每一个`task`,都必须有 *起止日期* ,在起止日期内,系统会自动执行该任务.
@@ -39,6 +45,8 @@
 `task_define` 表字段详解:
 
 * id: auto increment, PK
+* name: text UNIQUE 该task的名字,方便用户查看,惟一
+* type: text 该task要统计的数据类型, 只能是  perf/click/error
 * page_id: text 该task对应的页面识别URL
 * file_path: text NOT NULL 该task的实际执行文件路径
 * start_date: integer 该task的开始执行日期,格式为 YYYYMMDD
@@ -51,7 +59,7 @@
 创建表的SQL: 
 
 ```
-CREATE TABLE task_define ( id serial UNIQUE, page_id text NOT NULL, file_path text NOT NULL, start_date integer NOT NULL, end_date integer NOT NULL, priority smallint DEFAULT 0 );
+CREATE TABLE task_define ( id serial UNIQUE, name text UNIQUE NOT NULL, type text NOT NULL, page_id text NOT NULL, file_path text NOT NULL, start_date integer NOT NULL, end_date integer NOT NULL, priority smallint DEFAULT 0 );
 ```
 
 
@@ -79,6 +87,26 @@ CREATE TABLE task_define ( id serial UNIQUE, page_id text NOT NULL, file_path te
 ```
 CREATE TABLE task_execute ( id serial, task_id integer REFERENCES task_define (id), log_date integer NOT NULL, priority smallint DEFAULT 0 , status smallint DEFAULT 0, CONSTRAINT task_run_date PRIMARY KEY(task_id, log_date) );
 ```
+
+### 任务统计输出结果表 xxx_result
+
+每种不同 `type` 的任务, 产出的统计结果,保存到对应的 `${type}_result` 表里. 比如 *性能* 统计结果,保存到 `perf_result` 表中;
+ *点击* 统计结果,保存到 `click_result` 表中 .
+ 
+ 以 `perf_result` 表结果为例, 字段详解:
+ 
+ * id: serial auto increment
+ * task_id: integer Foreign Key -> task_define(id)
+ * log_date: integer 计算结果对应的日期,格式为 YYYYMMDD
+ * log_data: json 计算的结果,格式为 JSON
+ 
+ 主键(Primary Key): (task_id, log_date) 
+ 
+ 创建表的SQL:
+ 
+ ```
+ CREATE TABLE perf_result ( id serial, task_id integer REFERENCES task_define (id), log_date integer NOT NULL, log_data json, CONSTRAINT task_result_date PRIMARY KEY(task_id, log_date) );
+ ```
 
 
 

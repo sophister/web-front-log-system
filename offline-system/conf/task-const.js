@@ -12,10 +12,10 @@ const TASK_EXECUTE_STATUS = {
     WAITING : 0,
     //任务执行中
     EXECUTING : 1,
-    //任务执行成功
-    SUCCESS : 2,
     //任务执行失败
-    FAIL : 3
+    FAIL : 2,
+    //任务执行成功
+    SUCCESS : 3
 };
 
 //任务存储的表
