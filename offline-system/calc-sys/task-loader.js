@@ -29,6 +29,8 @@ let taskID = parseInt( process.env.task_id, 10);
 
 //任务开始执行时间
 const TASK_START_TIME = Date.now();
+//总共处理了多少条
+let totalLogNumber = 0;
 
 if( ! platform || ! DB_CONFIG[platform] ){
     logManager.error(`[task-loader] 任务 [ ${taskID} ] 运行的平台 [ ${platform} ] 不能为空!!`);
@@ -63,7 +65,7 @@ function fatalHandle(e){
 function taskEnd(){
     let taskDuration = Date.now() - TASK_START_TIME;
     taskDuration = taskDuration / 1000;
-    logManager.info(`[task-loader] 任务 [ ${taskID} ] 在日期 [ ${LOG_DATE} ] 执行完成,耗时: ${taskDuration} 秒 `);
+    logManager.info(`[task-loader] 任务 [ ${taskID} ] 在日期 [ ${LOG_DATE} ] 执行完成, 共处理[${totalLogNumber}]条日志, 耗时: ${taskDuration} 秒 `);
 }
 
 //TODO 根据 taskID ,从 task_define 表中,获取 task对应的JS路径
@@ -76,6 +78,9 @@ const TASK_FAIL = TASK_CONST.EXECUTE_STATUS.FAIL;
 const TASK_SUCCESS = TASK_CONST.EXECUTE_STATUS.SUCCESS;
 
 const dbConnectString = DB_CONFIG[platform].CONNECT_STRING;
+
+//记录任务开始实行
+logManager.info(`[task-loader][BEGIN] 任务 [ ${taskID} ] 计算日志日期 [ ${LOG_DATE} ] , 开始============>`);
 
 
 //从 task_define 表,读取当前task_id 对应的 file_path ,找到要执行的JS
@@ -204,6 +209,7 @@ function runTask(taskConfig){
             let query = client.query( sql );
 
             query.on('row', function(row, result){
+                totalLogNumber++;
                 taskConfig.handleLine( row );
             } );
 
