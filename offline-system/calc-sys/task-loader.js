@@ -80,7 +80,7 @@ const TASK_SUCCESS = TASK_CONST.EXECUTE_STATUS.SUCCESS;
 const dbConnectString = DB_CONFIG[platform].CONNECT_STRING;
 
 //记录任务开始实行
-logManager.info(`[task-loader][BEGIN] 任务 [ ${taskID} ] 计算日志日期 [ ${LOG_DATE} ] , 开始============>`);
+logManager.info(`[task-loader][BEGIN] 任务 task_id=[${taskID}] 计算日志日期 log_date=[${LOG_DATE}] , 开始============>`);
 
 
 //从 task_define 表,读取当前task_id 对应的 file_path ,找到要执行的JS
@@ -101,7 +101,7 @@ try{
             if( ! obj || ! obj.file_path ){
                 //未找到匹配的 task_id
                 logManager.warn(`[task-loader] 在[${TASK_DEFINE_TABLE}]表中未找到id=[${taskID}]的任务`);
-                process.exit(0);
+                process.exit(1);
             }
 
             const RAW_FILE_PATH = obj.file_path;
@@ -115,8 +115,8 @@ try{
             try{
                 taskConfig = require( TASK_FILE_PATH );
             }catch(e){
-                logManager.error(`[task-loader] 加载任务 [ ${taskID} ] 失败. ${e}`);
-                process.exit(0);
+                logManager.error(`[task-loader] 加载任务 task_id=[${taskID}] 失败. ${e}`);
+                process.exit(1);
             }
 
             let filter = taskConfig.filter;
@@ -124,8 +124,8 @@ try{
             const type = filter.type;
 
             if(  LOG_TYPE.ALL_TYPES.indexOf(type) < 0 ){
-                logManager.error(`执行任务 [ ${taskID} ] 失败. 找不到对应的 type [ ${type} ] `);
-                process.exit(0);
+                logManager.error(`执行任务 task_id=[${taskID}] 失败. 找不到对应的 type [ ${type} ] `);
+                process.exit(1);
             }
 
             tryStartTask( function(){
@@ -163,14 +163,14 @@ function tryStartTask(successCallback){
 
                 if( result.rowCount === 1 ){
                     //更新成功,继续执行任务
-                    logManager.info(`[task-loader] 在表[${TASK_EXECUTE_TABLE}]中更新id=[${taskID}]状态为 [1] 成功`);
+                    logManager.info(`[task-loader] 在表[${TASK_EXECUTE_TABLE}]中更新task_id=[${taskID}]状态为 status=[${TASK_EXECUTING}] 成功`);
                     successCallback();
                     return;
                 }
 
                 //更新失败,不执行任务
-                logManager.warn(`[task-loader] 尝试在表[${TASK_EXECUTE_TABLE}]中更新id=[${taskID}]状态为 [1] 失败,结束执行该任务!`);
-                process.exit(0);
+                logManager.warn(`[task-loader] 尝试在表[${TASK_EXECUTE_TABLE}]中更新task_id=[${taskID}]状态为 status=[${TASK_EXECUTING}] 失败,结束执行该任务!`);
+                process.exit(1);
 
             } );
 
@@ -300,14 +300,14 @@ function setTaskFail(callback){
 
                 if( result.rowCount === 1 ){
                     //更新成功,继续执行任务
-                    logManager.info(`[task-loader] 在表[${TASK_EXECUTE_TABLE}]中更新id=[${taskID}]状态为 [${TASK_FAIL}] 成功`);
+                    logManager.info(`[task-loader] 在表[${TASK_EXECUTE_TABLE}]中更新status_id=[${taskID}]状态为 status=[${TASK_FAIL}] 成功`);
                     callback();
                     return;
                 }
 
                 //更新失败,不执行任务
-                logManager.warn(`[task-loader] 尝试在表[${TASK_EXECUTE_TABLE}]中更新id=[${taskID}]状态为 [${TASK_FAIL}] 失败,结束执行该任务!`);
-                process.exit(0);
+                logManager.warn(`[task-loader] 尝试在表[${TASK_EXECUTE_TABLE}]中更新task_id=[${taskID}]状态为 status=[${TASK_FAIL}] 失败,结束执行该任务!`);
+                process.exit(1);
 
             } );
 

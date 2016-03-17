@@ -33,6 +33,26 @@
 以下的表结构, 都是以 *移动端* 
  
 
+### 原始日志存放表, `xxx_raw` 
+
+表名, 以 日志类型 + _raw 作为, 比如 性能 表: perf_raw; 点击日志表: click_raw.
+
+下面以 `perf_raw` 为例:
+
+* id: serial auto increment, PK
+* page_id: text NOT NULL 日志对应的页面URL
+* log_date: integer 计算结果对应的日期,格式为 YYYYMMDD
+* log_data: json 原始的日志的有效内容,格式为 JSON
+
+表名: `perf_raw`
+
+创建表的SQL:
+
+```
+CREATE TABLE perf_raw (id serial, page_id text NOT NULL, log_date integer NOT NULL, log_data json NOT NULL); 
+```
+
+
 ### Task 表
 
 执行里每一个统计任务,都对应 `Task` 表的一条记录(`Record`),每一个`task`,都必须有 *起止日期* ,在起止日期内,系统会自动执行该任务.
