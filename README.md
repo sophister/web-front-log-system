@@ -115,18 +115,18 @@ CREATE TABLE task_execute ( id serial, task_id integer REFERENCES task_define (i
  
  以 `perf_result` 表结果为例, 字段详解:
  
- * id: serial auto increment
- * task_id: integer Foreign Key -> task_define(id)
- * log_date: integer 计算结果对应的日期,格式为 YYYYMMDD
- * log_data: json 计算的结果,格式为 JSON
+* id: serial auto increment
+* task_id: integer Foreign Key -> task_define(id)
+* log_date: integer 计算结果对应的日期,格式为 YYYYMMDD
+* log_data: json 计算的结果,格式为 JSON
  
- 主键(Primary Key): (task_id, log_date) 
+主键(Primary Key): (task_id, log_date) 
  
- 创建表的SQL:
+创建表的SQL:
  
- ```
- CREATE TABLE perf_result ( id serial, task_id integer REFERENCES task_define (id), log_date integer NOT NULL, log_data json, CONSTRAINT task_result_date PRIMARY KEY(task_id, log_date) );
- ```
+```
+CREATE TABLE perf_result ( id serial, task_id integer REFERENCES task_define (id), log_date integer NOT NULL, log_data json, CONSTRAINT task_result_date PRIMARY KEY(task_id, log_date) );
+```
 
 
 
