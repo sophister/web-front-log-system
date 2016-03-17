@@ -65,7 +65,7 @@ function fatalHandle(e){
 function taskEnd(){
     let taskDuration = Date.now() - TASK_START_TIME;
     taskDuration = taskDuration / 1000;
-    logManager.info(`[task-loader][END] 任务 [ ${taskID} ] 在日期 [ ${LOG_DATE} ] 执行完成, 共处理[${totalLogNumber}]条日志, 耗时: ${taskDuration} 秒 <===========`);
+    logManager.info(`[task-loader][END] 任务 task_id=[${taskID}] 在日期 log_date=[${LOG_DATE}] 执行完成, 共处理[${totalLogNumber}]条日志, 耗时: ${taskDuration} 秒 <===========`);
 }
 
 //TODO 根据 taskID ,从 task_define 表中,获取 task对应的JS路径
