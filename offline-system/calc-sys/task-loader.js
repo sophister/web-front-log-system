@@ -163,13 +163,13 @@ function tryStartTask(successCallback){
 
                 if( result.rowCount === 1 ){
                     //更新成功,继续执行任务
-                    logManager.info(`[task-loader] 在表[${TASK_EXECUTE_TABLE}]中更新task_id=[${taskID}]状态为 status=[${TASK_EXECUTING}] 成功`);
+                    logManager.info(`[task-loader] 在表[${TASK_EXECUTE_TABLE}]中更新task_id=[${taskID}]状态为 status=[${TASK_EXECUTING}] 成功  log_date=[${LOG_DATE}] `);
                     successCallback();
                     return;
                 }
 
                 //更新失败,不执行任务
-                logManager.warn(`[task-loader] 尝试在表[${TASK_EXECUTE_TABLE}]中更新task_id=[${taskID}]状态为 status=[${TASK_EXECUTING}] 失败,结束执行该任务!`);
+                logManager.warn(`[task-loader] 尝试在表[${TASK_EXECUTE_TABLE}]中更新task_id=[${taskID}]状态为 status=[${TASK_EXECUTING}] 失败,结束执行该任务! log_date=[${LOG_DATE}] `);
                 process.exit(1);
 
             } );
@@ -300,13 +300,13 @@ function setTaskFail(callback){
 
                 if( result.rowCount === 1 ){
                     //更新成功,继续执行任务
-                    logManager.info(`[task-loader] 在表[${TASK_EXECUTE_TABLE}]中更新status_id=[${taskID}]状态为 status=[${TASK_FAIL}] 成功`);
+                    logManager.info(`[task-loader] 在表[${TASK_EXECUTE_TABLE}]中更新status_id=[${taskID}]状态为 status=[${TASK_FAIL}] 成功  log_date=[${LOG_DATE}] `);
                     callback();
                     return;
                 }
 
                 //更新失败,不执行任务
-                logManager.warn(`[task-loader] 尝试在表[${TASK_EXECUTE_TABLE}]中更新task_id=[${taskID}]状态为 status=[${TASK_FAIL}] 失败,结束执行该任务!`);
+                logManager.warn(`[task-loader] 尝试在表[${TASK_EXECUTE_TABLE}]中更新task_id=[${taskID}]状态为 status=[${TASK_FAIL}] 失败,结束执行该任务!  log_date=[${LOG_DATE}] `);
                 process.exit(1);
 
             } );
