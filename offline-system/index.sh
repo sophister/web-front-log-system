@@ -123,6 +123,7 @@ fi
 process_log "开始扫描task表, 筛选要执行的task队列"
 cd ${base_dir}
 platform=mo log_date=${log_date} node daily-task-scan.js
+platform=pc log_date=${log_date} node daily-task-scan.js
 
 if [ $? -eq 0 ]
 then
@@ -136,6 +137,7 @@ fi
 process_log "开始执行 task_execute 中 status=0 的任务:"
 cd ${base_dir}
 platform=mo task_status=0 node task-consumer.js
+platform=pc task_status=0 node task-consumer.js
 
 if [ $? -eq 0 ]
 then

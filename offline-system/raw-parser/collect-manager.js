@@ -51,7 +51,7 @@ let singleton = {
     
     /**
      * 将解析为JSON的一行日志数据，交给各个collector判断入库
-     * @param lineOjb {Object} 一行日志解析之后的JSON
+     * @param lineObj {Object} 一行日志解析之后的JSON
      * @return {boolean} true 日志成功入库；false 日志没有找到符合条件的collector，未入库
      */
     collect : function( lineObj ){
