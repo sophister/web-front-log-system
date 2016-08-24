@@ -53,7 +53,7 @@ let rl = readline.createInterface({
 rl.on('line', function(line){
     totalCount++;
     let lineObj = parseLine( line );
-    if( ! line ){
+    if( ! lineObj ){
         // 日志解析失败!!
         logManager.warn(`日志行解析失败:${line}`);
         return;
