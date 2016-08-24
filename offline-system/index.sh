@@ -60,6 +60,13 @@ function download_unzip(){
     temp_download_url="http://analysis.we.com/nginx/${temp_log_gz_name}"
     #下载日志文件
     cd ${gz_log_dir_path}
+
+    #先删除之前可能存在的文件
+    if [ -f ${temp_log_file_name} ]
+    then
+        rm "${temp_log_file_name}" "${temp_log_gz_name}"
+    fi
+
     wget ${temp_download_url}
 
     if [ $? -ne 0 ]
