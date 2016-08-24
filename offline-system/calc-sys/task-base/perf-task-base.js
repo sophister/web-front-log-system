@@ -63,6 +63,11 @@ function createPerformanceTask( conf ){
             let jDomReadyTime = logData.jdom_ready - logData.jhead_start;
             let jFullLoadTime = logData.jfull_load - logData.jhead_start;
 
+            if( isNaN(jHeadTime) || isNaN(jBodyTime) || isNaN(jDomReadyTime) || isNaN(jFullLoadTime) ){
+                logManager.warn(`性能统计时间有误!${JSON.stringify(line)}`);
+                return;
+            }
+
             if( ! isFirstLine ){
                 //非第一次收到数据
                 resultHeadFinish.total += jHeadTime;
