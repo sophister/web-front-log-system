@@ -129,6 +129,11 @@ CREATE TABLE perf_result ( id serial, task_id integer REFERENCES task_define (id
 ```
 
 
+## 定时任务
+
+```
+0 3 * * * cd /home/frontend/fe-log-system/web-front-log-system/offline-system && sh index.sh > ./crontab-log/`date +\%Y\%m\%d`.log 2>& 1
+```
 
 ## 相关文档
 

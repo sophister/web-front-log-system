@@ -83,7 +83,7 @@ rl.on('close', function(){
             process.exit(0);
         })
         .catch(function(err){
-            logManager.end();
+            logManager.error(err);
             process.exit(1);
         });
     
