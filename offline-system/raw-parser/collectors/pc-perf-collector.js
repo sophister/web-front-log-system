@@ -4,6 +4,8 @@
 
 'use strict';
 
+let logManager = rawParser.logManager;
+
 const PLATFORM = 'pc';
 const TYPE = 'perf';
 
@@ -38,6 +40,7 @@ let singleton = {
                 });
                 return true;
             }catch(e){
+                logManager.warn(`解析性能的perf数据失败: ${e.message}`);
                 //非JSON数据，不保存
                 return false;
             }
