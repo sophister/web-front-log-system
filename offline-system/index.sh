@@ -54,6 +54,32 @@ function process_log(){
     echo "${time} ${1}"
 }
 
+function download_unzip(){
+    temp_log_file_name=$1
+    temp_log_gz_name="${temp_log_file_name}.gz"
+    temp_download_url="http://analysis.we.com/nginx/${temp_log_gz_name}"
+    #下载日志文件
+    cd ${gz_log_dir_path}
+    wget ${temp_download_url}
+
+    if [ $? -ne 0 ]
+    then
+        process_log "从线上下载日志文件出错: ${temp_download_url}"
+        exit 1
+    fi
+
+    #解压下载的压缩包
+    cd ${gz_log_dir_path}
+
+    gunzip -c ${temp_log_gz_name} > ${temp_log_file_name}
+
+    if [ $? -ne 0 ]
+    then
+        process_log "解压日志文件${log_file_gz}出错"
+        exit 1
+    fi
+}
+
 cd ${base_dir}
 
 #检查原始日志文件目录是否存在,不存在则创建
@@ -69,30 +95,27 @@ fi
 
 
 #如果对应日期的日志压缩文件不存在,则从线上下载
-if [ ! -f "${gz_log_dir_path}/${log_file_gz}" ]
-then
-    process_log "原始日志的压缩文件不存在,开始从线上下载原始日志的压缩文件:"
-    #下载日志文件
-    cd ${gz_log_dir_path}
-    wget "http://analysis.we.com/nginx/${log_file_gz}"
-
-    if [ $? -ne 0 ]
-    then
-        process_log "从线上下载日志文件出错: http://analysis.we.com/nginx/${log_file_gz}"
-        exit 1
-    fi
-
-fi
+#if [ ! -f "${gz_log_dir_path}/${log_file_gz}" ]
+#then
+#    process_log "原始日志的压缩文件不存在,开始从线上下载原始日志的压缩文件:"
+#
+#fi
 
 cd ${gz_log_dir_path}
 
-gunzip -c ${log_file_gz} > ${log_file_unzip}
+process_log "开始从线上下载原始日志的压缩文件:"
 
-if [ $? -ne 0 ]
-then
-    process_log "解压日志文件${log_file_gz}出错"
-    exit 1
-fi
+#下载两个日志文件
+log_1_file_name="20-we_s1_access.log-${log_file_date}"
+log_2_file_name="22-we_s1_access.log-${log_file_date}"
+
+download_unzip ${log_1_file_name}
+download_unzip ${log_2_file_name}
+
+#合并两个日志文件到一个
+process_log "合并${log_1_file_name}和${log_2_file_name}文件内容:"
+cd ${gz_log_dir_path}
+cat ${log_1_file_name} ${log_2_file_name} > ${log_file_unzip}
 
 #如果解压之后的目录已经存在同名文件,先删除
 if [ -f "${unzip_log_dir}/${log_file_unzip}" ]
