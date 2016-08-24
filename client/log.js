@@ -108,11 +108,17 @@
             domReady : function( timestamp ){
                 timestamp = timestamp || ( new Date()).getTime();
                 perfData.jdom_ready = timestamp;
+                if( ! perfData.jbody_end ){
+                    singleton.perf.bodyEnd( timestamp );
+                }
                 return singleton;
             },
             fullLoad : function( timestamp ){
                 timestamp = timestamp || ( new Date()).getTime();
                 perfData.jfull_load = timestamp;
+                if( ! perfData.jdom_ready ){
+                    singleton.perf.domReady( timestamp );
+                }
                 return singleton;
             },
             send : function(){

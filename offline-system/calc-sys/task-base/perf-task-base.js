@@ -7,6 +7,9 @@
 'use strict';
 
 
+//超过2分钟的值,认为是无用的,可以抛弃掉
+const MAX_LIMIT = 60000 * 2;
+
 function createPerformanceTask( conf ){
 
 
@@ -57,14 +60,26 @@ function createPerformanceTask( conf ){
         handleLine : function( line ){
             let logData = line.log_data;
 
+            let headStart = logData.jhead_start;
+            let bodyStart = logData.jbody_start;
+            let fullLoad = logData.jfull_load;
+            //实际日志中,发现有些缺少了 jbody_end 数据
+            let domReady = logData.jdom_ready || fullLoad;
+            let bodyEnd = logData.jbody_end || domReady;
 
-            let jHeadTime = logData.jbody_start - logData.jhead_start;
-            let jBodyTime = logData.jbody_end - logData.jbody_start;
-            let jDomReadyTime = logData.jdom_ready - logData.jhead_start;
-            let jFullLoadTime = logData.jfull_load - logData.jhead_start;
+
+            let jHeadTime = bodyStart - headStart;
+            let jBodyTime = bodyEnd - bodyStart;
+            let jDomReadyTime = domReady - headStart;
+            let jFullLoadTime = fullLoad - headStart;
 
             if( isNaN(jHeadTime) || isNaN(jBodyTime) || isNaN(jDomReadyTime) || isNaN(jFullLoadTime) ){
                 logManager.warn(`性能统计时间有误!${JSON.stringify(line)}`);
+                return;
+            }
+
+            if( jFullLoadTime >= MAX_LIMIT ){
+                logManager.warn(`性能时间段超出最大值[${MAX_LIMIT}ms], 当做噪声点, 不参加平均值的计算`);
                 return;
             }
 
